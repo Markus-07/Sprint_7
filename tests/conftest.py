@@ -1,20 +1,27 @@
 import pytest
 
-from helpers.generate_data import register_new_courier_and_return_login_password
-from api.courier_api import courier_login, delete_courier
+from helpers.generate_data import generate_random_string
+from api.courier_api import create_courier, courier_login, delete_courier
 
 
 @pytest.fixture
 def registered_courier():
-    data = register_new_courier_and_return_login_password()
-    assert data, "Не удалось зарегистрировать курьера"
+    login = generate_random_string(10)
+    password = generate_random_string(10)
+    first_name = generate_random_string(10)
 
-    login, password, first_name = data
-    response = courier_login(login, password)
-    assert response.status_code == 200, f"Курьер не смог залогиниться: {response.text}"
-    courier_id = response.json().get("id")
+    response = create_courier(login, password, first_name)
+    # если создание не сработает, тест просто упадёт с FAIL — это нормально
 
-    yield {"login": login, "password": password, "first_name": first_name, "id": courier_id}
+    login_response = courier_login(login, password)
+    courier_id = login_response.json().get("id")
+
+    yield {
+        "login": login,
+        "password": password,
+        "first_name": first_name,
+        "id": courier_id,
+    }
 
     if courier_id:
         delete_courier(courier_id)

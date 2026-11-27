@@ -1,10 +1,10 @@
 import pytest
-
+import allure
 from api.order_api import create_order
 
 
 class TestCreateOrder:
-
+    @allure.title("Создание заказа — проверка вариантов цвета")
     @pytest.mark.parametrize(
         "color",
         [
@@ -29,6 +29,7 @@ class TestCreateOrder:
         assert response.status_code == 201
         assert "track" in response.json()
 
+    @allure.title("Создание заказа — без поля color")
     def test_create_order_without_color_field(self):
         response = create_order(
             first_name="Naruto",
@@ -43,6 +44,7 @@ class TestCreateOrder:
         assert response.status_code == 201
         assert "track" in response.json()
 
+    @allure.title("Создание заказа — в ответе есть трек-номер")
     def test_create_order_body_has_track_number(self):
         response = create_order(
             first_name="Naruto",

@@ -1,10 +1,12 @@
-from api.order_api import get_orders
 import pytest
+import allure
+
+from api.order_api import get_orders
 
 
 class TestOrdersList:
-
     @pytest.mark.skip("Стенд возвращает 504, пока пропускаем")
+    @allure.title("Получить список заказов")
     def test_get_orders_returns_list(self):
         response = get_orders()
         assert response.status_code == 200
